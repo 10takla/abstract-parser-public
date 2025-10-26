@@ -1,0 +1,36 @@
+// dsfsdf sdfs fsdf 
+Name = "name"
+Name2: usize = "name"
+unit Name3 = "name"
+Str1 {
+    A("sdfs")
+    B("sdfs" / "sdf")
+}
+WithGeneric<G> = Ident G;
+Alias<G> = WithGeneric<G>?
+// sdsdsdd
+// sdsdsdd
+Str2 {
+    // sdsdsdd
+ 
+    // sdsdsdd
+    // sdsdsdd
+    a: "sdfs" "sdfsdf",
+    "sdfs"
+}
+Str3 ("sdfs" #[ignore] "sdfs")
+Str4 = "sdfsfd" / "sdfsfd"?
+Str5 = "sdfsfd" "sdfsfd";
+
+RegExpr = "\".*\""
+Any = ".*"
+DoubleSlash = "\/\/ "
+Tab = "    "
+Ident = "[A-Za-z_0-9@~]+"
+Space = "\s+"?
+NextLine = "\n"
+
+ParamPath = Ident (Ident Ident)*;
+SignedInt20 = Ident? Ident{1,20};
+
+Joinables = Ident ** Ident

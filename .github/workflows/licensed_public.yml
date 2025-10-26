@@ -1,0 +1,38 @@
+# 
+# abstract-parser — proprietary, source-available software (not open-source).    
+# Copyright (c) 2025 Abakar Letifov
+# (Летифов Абакар Замединович). All rights reserved.
+# 
+# Use of this Work is permitted only for viewing and internal evaluation,        
+# under the terms of the LICENSE file in the repository root.
+# If you do not or cannot agree to those terms, do not use this Work.
+# 
+# THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+# 
+
+name: Publish to abstract-parser-public
+on: { push: { branches: [ license ] } }
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          shared-key: rust-common
+          
+      - run: |
+          bash scripts/license/repo_license.sh
+          cargo check --workspace --all-targets --all-features
+      - name: Publish
+        run: |
+          git checkout --orphan publish-tmp
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --allow-empty -m "sync from ${{ github.repository }}@${{ github.sha }}"
+          git push -f "https://${{ secrets.TARGET_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/abstract-parser-public.git" HEAD:main

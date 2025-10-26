@@ -1,0 +1,135 @@
+# 
+# abstract-parser — proprietary, source-available software (not open-source).    
+# Copyright (c) 2025 Abakar Letifov
+# (Летифов Абакар Замединович). All rights reserved.
+# 
+# Use of this Work is permitted only for viewing and internal evaluation,        
+# under the terms of the LICENSE file in the repository root.
+# If you do not or cannot agree to those terms, do not use this Work.
+# 
+# THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+# 
+
+Point: @90 token r"[A-Za-z_0-9]+"
+
+Full begin
+    4.3837Mb
+    4.3833Mb
+    4.3833Mb
+    4.3830Mb
+
+release
+    5.7897Mb @90 token r"[A-Za-z_0-9]+"
+    5.7892Mb @90 token r"[A-Za-z_0-9]+"
+    5.7895Mb @90 token r"[A-Za-z_0-9]+"
+    5.7888Mb @90 token r"[A-Za-z_0-9]+"
+
+proc-macro choice rule (unattr)
+    inline always -
+        4.3888Mb
+        4.3890Mb
+        4.3878Mb
+    inline never ++
+        4.3824Mb
+        4.3822Mb
+        4.3818Mb
+    inline +
+        4.3826Mb
+        4.3832Mb
+
+proc-macro sequence struct (unattr)
+    inline always -
+        4.3830Mb
+        4.3838Mb
+        4.3835Mb
+        4.3842Mb
+    inline never +-=
+        4.3833Mb
+        4.3836Mb
+        4.3830Mb
+        4.3824Mb
+    inline +
+        4.3824Mb
+        4.3820Mb
+        4.3830Mb
+        4.3827Mb
+
+token rule  (inline)
+    inline always +-=
+        4.3819Mb
+        4.3837Mb
+        4.3821Mb
+    inline never +-=
+        4.3829Mb
+        4.3826Mb
+        4.3835Mb
+    unattr +-=
+        4.3819Mb
+        4.3834Mb
+        4.3827Mb
+
+SequenceRule (anattr)
+    inline always -
+        4.3869Mb
+        4.3868Mb
+    inline never +
+        4.3828Mb
+        4.3837Mb
+        4.3832Mb
+        4.3827Mb
+    inline ++
+        4.3826Mb
+        4.3827Mb
+        4.3820Mb
+        4.3829Mb
+
+JoinableRule (unattr)
+    inline always -
+        4.3848Mb
+        4.3832Mb
+        4.3838Mb
+        4.3840Mb
+    inline never ++
+        4.3821Mb
+        4.3823Mb
+        4.3824Mb
+        4.3819Mb
+    inline +
+        4.3826Mb
+        4.3820Mb
+        4.3828Mb
+        4.3829Mb
+
+WrapRule (inline)
+    inline always -
+        4.3845Mb
+        4.3847Mb
+        4.3834Mb
+        4.3846Mb
+    inline never +
+        4.3834Mb
+        4.3831Mb
+        4.3823Mb
+        4.3833Mb
+        4.3821Mb
+    unattr ++
+        4.3819Mb
+        4.3825Mb
+        4.3823Mb
+        4.3820Mb
+        4.3828Mb
+
+
+Inline all wrap functions:
+    4.3832Mb @90 token r"[A-Za-z_0-9]+"
+    4.3828Mb @90 token r"[A-Za-z_0-9]+"
+    4.3824Mb @90 token r"[A-Za-z_0-9]+"
+    4.3828Mb @90 token r"[A-Za-z_0-9]+"
+
+    release:
+    5.7618Mb @90 token r"[A-Za-z_0-9]+"
+    5.7622Mb @90 token r"[A-Za-z_0-9]+"
+    5.7619Mb @90 token r"[A-Za-z_0-9]+"
+    5.7623Mb @90 token r"[A-Za-z_0-9]+"
+
+    Вывод: inline простых, промежуточных функций (single call site) уменьшил стек в release на 28 Кб

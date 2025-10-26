@@ -1,0 +1,79 @@
+# 
+# abstract-parser — proprietary, source-available software (not open-source).    
+# Copyright (c) 2025 Abakar Letifov
+# (Летифов Абакар Замединович). All rights reserved.
+# 
+# Use of this Work is permitted only for viewing and internal evaluation,        
+# under the terms of the LICENSE file in the repository root.
+# If you do not or cannot agree to those terms, do not use this Work.
+# 
+# THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+# 
+
+name: Criterion Benchmarks
+
+on:
+  push:
+    tags: ["bench-*"]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@nightly
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          shared-key: rust-common
+
+      - name: Install cargo-criterion
+        run: cargo install --locked cargo-criterion || true
+
+      - name: Run benchmarks
+        run: |
+          cargo bench "features grammar" -p parser-core --bench features
+      
+      - run: pip install beautifulsoup4
+          
+      - name: Append benchmark summary to job summary
+        run: python3 scripts/bench/criterion_json_to_md.py >> $GITHUB_STEP_SUMMARY
+
+      # # ✅ Публикуем Check Run вручную (чтобы было видно под коммитом)
+      # - name: Publish Check Run
+      #   if: always()
+      #   uses: LouisBrunner/checks-action@v2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     name: Criterion Benchmarks
+      #     conclusion: ${{ job.status }}
+      #     output_text_description_file: criterion-summary.md
+      #     output: '{"summary":"Criterion benchmark summary"}'
+
+      # # 📊 Публикуем как обычный GitHub Test Report (JUnit)
+      # - name: Publish Criterion report
+      #   uses: dorny/test-reporter@v1
+      #   with:
+      #     name: Criterion Benchmarks
+      #     path: criterion.junit.xml
+      #     reporter: java-junit
+      #     fail-on-error: false
+
+      # # 💾 Сохраняем артефакты
+      # - name: Upload raw results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: criterion-results
+      #     path: |
+      #       results.jsonl
+      #       criterion.junit.xml
+      #       criterion-summary.md
+      #       target/criterion/**
