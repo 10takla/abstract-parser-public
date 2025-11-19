@@ -1,0 +1,116 @@
+# 
+# abstract-parser — proprietary, source-available software (not open-source).    
+# Copyright (c) 2025 Abakar Letifov
+# (Летифов Абакар Замединович). All rights reserved.
+# 
+# Use of this Work is permitted only for viewing and internal evaluation,        
+# under the terms of the LICENSE file in the repository root.
+# If you do not or cannot agree to those terms, do not use this Work.
+# 
+# THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+# 
+
+[package]
+edition = "2018"
+license-file.workspace = true
+name = "abstract-parser"
+publish.workspace = true
+repository.workspace = true
+
+[workspace.package]
+license-file = "LICENSE.md"
+publish = false
+repository = "https://github.com/10takla/abstract-parser"
+
+[profile.perf]
+debug = true
+inherits = "release"
+lto = false
+opt-level = 3
+
+[[bench]]
+harness = false
+name = "zpl"
+
+[features]
+chars = ["parsers/chars"]
+grammar = ["dep:grammar"]
+logs = [
+  "parser/logs",
+]
+syn = ["parsers/syn"]
+
+[dependencies]
+grammar = {workspace = true, optional = true}
+parser.workspace = true
+parsers.workspace = true
+shared-macros.workspace = true
+utils = {workspace = true, features = ["test-logs"]}
+
+[dev-dependencies]
+abstract-parser = {workspace = true, features = ["grammar"]}
+criterion.workspace = true
+
+[workspace]
+default-members = [
+  ".",
+  "parser-core",
+  "parser-core/core",
+  "parser-core/macros",
+  "parser-core/extended-macros",
+  "parsers",
+  "parsers/chars",
+  "parsers/chars/macros",
+  "parsers/syn",
+  "shared-macros",
+  "grammar",
+  "grammar/core",
+  "grammar/core/parser",
+  "grammar/core/macros",
+  "grammar/core/tree",
+  "grammar/shared-macros",
+  "grammar/extended/parser",
+  "grammar/extended/macros",
+  "grammar/extended/tree",
+  "grammar/extended/tree/parser",
+  "grammar/feature",
+  "grammar/feature/parser",
+  "utils",
+]
+members = [
+  "utils",
+  "grammar/feature",
+  "parser-core/extended-macros",
+]
+resolver = "2"
+
+[workspace.dependencies]
+abstract-parser = {path = "."}
+chars-parser = {path = "parsers/chars"}
+criterion = "0.7.0"
+grammar = {path = "grammar"}
+grammar-core = {path = "grammar/core"}
+grammar-core-macros = {path = "grammar/core/macros"}
+grammar-core-parser = {path = "grammar/core/parser"}
+grammar-core-tree = {path = "grammar/core/tree"}
+grammar-extended = {path = "grammar/extended"}
+grammar-extended-macros = {path = "grammar/extended/macros"}
+grammar-extended-parser = {path = "grammar/extended/parser"}
+grammar-extended-tree = {path = "grammar/extended/tree"}
+grammar-extended-tree-parser = {path = "grammar/extended/tree/parser"}
+grammar-feature = {path = "grammar/feature"}
+grammar-feature-parser = {path = "grammar/feature/parser"}
+grammar-shared-macros = {path = "grammar/shared-macros"}
+parser = {path = "parser-core"}
+parser-core = {path = "parser-core/core"}
+parser-extended-macros = {path = "parser-core/extended-macros"}
+parser-macros = {path = "parser-core/macros"}
+parsers = {path = "parsers"}
+proc-macro2 = "1.0.89"
+quote = "1.0.37"
+shared-macros = {path = "shared-macros"}
+std-reset = "0.1.5"
+std-reset-macros = "0.1.513"
+syn = {version = "2.0.87", features = ["full"]}
+syn-parser = {path = "parsers/syn"}
+utils = {path = "utils"}

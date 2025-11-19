@@ -1,0 +1,1342 @@
+// Scalable/Bitmapped Font
+^A = f (, o)? (, h)? (, w)?
+    // font name
+    f = "[A-Z0-9]"
+    // field orientation
+    o = "[NRIB]"
+    // character height (in dots)
+    h = Scalable / Bitmapped
+        // Scalable: height in dots
+        Scalable = "(1[0-9]|[2-9][0-9]|[1-9][0-9]{2,3}|[12][0-9]{4}|3[01][0-9]{3}|32000)"
+        // Bitmapped: 1–10 times base height
+        Bitmapped = "([1-9]|10)"
+    // width (in dots)
+    w = h
+// Use Font Name to Call Font
+^A@ = o? (, h)? (, w)? , d : f . x
+    // field orientation
+    o = ^A.o
+    // character height (in dots)
+    h = ^A.h
+    // width (in dots)
+    w = ^A.w
+    // drive location of font
+    d = REBA
+    // font name
+    f = "[A-Za-z0-9_]+"
+    // extension
+    x = "FNT" / "TTF" / "TTE"
+// Aztec Barcode Parameters
+^B0 = a? (, b)? (, c)? (, d)? (, e)? (, f)? (, g)?
+    // orientation
+    a = ^A.o
+    // magnification factor
+    b = "([1-9]|10)"
+    // extended channel interpretation code indicator
+    c = YesNo
+    // error control and symbol size/type indicator
+    d = "(0|[0-9]{2}|10[1-4]|2(0[1-9]|[12][0-9]|3[0-2])|300)"
+    // menu symbol indicator
+    e = YesNo
+    // number of symbols for structured append
+    f = "([1-9]|1[0-9]|2[0-6])"
+    // optional ID field for structured append
+    g = "[ -~]{0,24}"
+// Code 11 Barcode
+^B1 = o? (, e)? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // check digit
+    e = YesNo
+    // barcode height (in dots)
+    h = "([1-9][0-9]{0,3}|[12][0-9]{4}|3[01][0-9]{3}|32000)"
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// Interleaved 2 of 5 Bar Code
+^B2 = o? (, h)? (, f)? (, g)? (, e)? (, j)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // calculate and print Mod 10 check digit
+    e = YesNo
+    // TODO: проверить назначение j (в документации обозначено, но описание отсутствует в текущем фрагменте)
+    j = e
+// Code 39 Barcode
+^B3 = o? (, e)? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // Mod-43 check digit
+    e = YesNo
+    // bar code height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// Code 49 Barcode
+^B4 = o? (, h)? (, f)? (, m)?
+    // orientation
+    o = ^A.o
+    // height multiplier of individual rows
+    h = "([1-9][0-9]{0,3}|[12][0-9]{4}|3[01][0-9]{3}|32000)"
+    // print interpretation line
+    f = "[NAB]"
+    // starting mode
+    m = "[0-5A]"
+// Planet Code Barcode
+^B5 = o? (, h)? (, f)? (, g)?
+    // orientation code
+    o = ^A.o
+    // barcode height (in dots)
+    h = "([1-9][0-9]{0,3}|9999)"
+    // interpretation line
+    f = YesNo
+    // interpretation line above the barcode
+    g = YesNo
+// PDF417 Bar Code
+^B7 = o? (, h)? (, s)? (, c)? (, r)? (, t)?
+    // orientation
+    o = ^A.o
+    // bar code height for individual rows (in dots)
+    h = "([1-9][0-9]{0,3}|[12][0-9]{4}|30000)"
+    // security level
+    s = "[1-8]"
+    // number of data columns
+    c = "([1-9]|[12][0-9]|30)"
+    // number of rows
+    r = "([3-9]|[1-8][0-9]|90)"
+    // truncate right row indicators and stop pattern
+    t = YesNo
+// EAN-8 Barcode
+^B8 = o? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // bar code height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// UPC-E Barcode
+^B9 = o? (, h)? (, f)? (, g)? (, e)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // print check digit
+    e = YesNo
+// Code 93 Barcode
+^BA = o? (, h)? (, f)? (, g)? (, e)?
+    // orientation
+    o = ^A.o
+    // bar code height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // print check digit
+    e = YesNo
+// CODABLOCK Barcode
+^BB = o? (, h)? (, s)? (, c)? (, r)? (, m)?
+    // orientation
+    o = ^A.o
+    // bar code height for individual rows (in dots)
+    h = "([2-9]|[1-9][0-9]{1,3}|[12][0-9]{4}|32000)"
+    // security level (checksum)
+    s = YesNo
+    // number of characters per row
+    c = "([2-9]|[1-5][0-9]|6[0-2])"
+    // number of rows
+    r = "([1-9]|1[0-9]|2[0-2])" / "[2-4]"
+    // mode
+    m = "[AEF]"
+// Code 128 Barcode
+^BC = o? (, h)? (, f)? (, g)? (, e)? (, m)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // UCC check digit
+    e = YesNo
+    // mode
+    m = "[NUAD]"
+// UPS MaxiCode Bar Code
+^BD = m? (, n)? (, t)?
+    // mode
+    m = "[2-6]"
+    // symbol number
+    n = "[1-8]"
+    // total number of symbols
+    t = "[1-8]"
+// EAN-13 Barcode
+^BE = o? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// MicroPDF417 Barcode
+^BF = o? (, h)? (, m)?
+    // orientation
+    o = ^A.o
+    // bar code height (in dots)
+    h = ^B5.h
+    // mode
+    m = "([0-9]|[1-9][0-9]|3[0-3])"
+// Industrial 2 of 5 Bar Code
+^BI = o? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // bar code height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// Standard 2 of 5 Bar Code
+^BJ = o? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // bar code height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// ANSI Codabar Bar Code
+^BK = o? (, e)? (, h)? (, f)? (, g)? (, k)? (, l)?
+    // orientation
+    o = ^A.o
+    // check digit
+    e = "N"
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // start character
+    k = "[ABCD]"
+    // stop character
+    l = k
+// LOGMARS Barcode
+^BL = o? (, h)? (, g)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line above code
+    g = YesNo
+// MSI Barcode
+^BM = o? (, e)? (, h)? (, f)? (, g)? (, e2)?
+    // orientation
+    o = ^A.o
+    // check digit selection
+    e = "[ABCD]"
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // inserts check digit into the interpretation line
+    e2 = YesNo
+// Aztec Barcode Parameters (alternate form)
+^BO = a? (, b)? (, c)? (, d)? (, e)? (, f)? (, g)?
+    // orientation
+    a = ^A.o
+    // magnification factor
+    b = ^B0.b
+    // extended channel interpretation code indicator
+    c = YesNo
+    // error control and symbol size/type indicator
+    d = "(0|[0-9]{2}|10[1-4]|2(0[1-9]|[12][0-9]|3[0-2])|300)"
+    // menu symbol indicator
+    e = YesNo
+    // number of symbols for structured append
+    f = "([1-9]|1[0-9]|2[0-6])"
+    // optional ID field (max 24 chars)
+    g = "[ -~]{0,24}"
+// Plessey Barcode
+^BP = o? (, e)? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // print check digit
+    e = YesNo
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// QR Code Barcode
+^BQ = a? (, b)? (, c)? (, d)? (, e)?
+    // field orientation (normal only)
+    a = "N"
+    // model
+    b = "[12]"
+    // magnification factor
+    c = "([1-9][0-9]?|100)"
+    // error correction
+    d = "[HQML]"
+    // mask value
+    e = "[0-7]"
+// TODO: доделать QR Code FD (field data switches)
+^QRFD
+// GS1 DataBar (Reduced Space Symbology)
+^BR = a? (, b)? (, c)? (, d)? (, e)? (, f)?
+    // orientation
+    a = ^A.o
+    // symbology type
+    b = "(1[0-2]|[1-9])"
+    // magnification factor
+    c = ^B0.b
+    // separator height
+    d = "[12]"
+    // barcode height
+    e = ^B1.h
+    // segment width (GS1 Expanded only)
+    f = "(2|4|6|8|10|12|14|16|18|20|22)"
+// UPC/EAN Extensions
+^BS = o? (, h)? (, f)? (, g)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+// TLC39 Barcode
+^BT = o? (, w1)? (, r1)? (, h1)? (, w2)? (, h2)?
+    // orientation
+    o = ^A.o
+    // width of the Code 39 bar code
+    w1 = ^B0.b
+    // wide to narrow bar width ratio (Code 39)
+    r1 = "(2(\.0)?|2\.[1-9]|3(\.0)?)"
+    // height of the Code 39 bar code
+    h1 = ^B5.h
+    // narrow bar width of MicroPDF417
+    w2 = w1
+    // row height of MicroPDF417
+    h2 = "([1-9][0-9]{0,2}|255)"
+// UPC-A Barcode
+^BU = o? (, h)? (, f)? (, g)? (, e)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B5.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // print check digit
+    e = YesNo
+// Data Matrix Barcode
+^BX = o? (, h)? (, s)? (, c)? (, r)? (, f)? (, g)? (, a)?
+    // orientation
+    o = ^A.o
+    // height of individual symbol elements
+    h = "([1-9][0-9]{0,3}|[12][0-9]{4}|32000)"
+    // quality level
+    s = "(0|50|80|100|140|200)"
+    // columns to encode
+    c = "([9-9]|[1-4][0-9])"
+    // rows to encode
+    r = "([9-9]|[1-4][0-9])"
+    // format ID
+    f = "[1-6]"
+    // escape sequence control character
+    g = "."
+    // aspect ratio
+    a = "[12]"
+// Bar Code Field Default
+^BY = w? (, r)? (, h)?
+    // module width (in dots)
+    w = ^B0.b
+    // wide bar to narrow bar width ratio
+    r = "(2(\.0)?|2\.[0-9]|3(\.0)?)"
+    // bar code height (in dots)
+    h = "([1-9][0-9]{0,3}|[12][0-9]{4}|32000)"
+// POSTAL Barcode
+^BZ = o? (, h)? (, f)? (, g)? (, t)?
+    // orientation
+    o = ^A.o
+    // barcode height (in dots)
+    h = ^B1.h
+    // print interpretation line
+    f = YesNo
+    // print interpretation line above code
+    g = YesNo
+    // postal code type
+    t = "[0123]"
+// Change Caret
+^CC = x
+    // caret character change
+    x = "."
+// Change Caret
+~CC = x
+    // caret character change
+    x = "."
+// Change Delimiter
+^CD = a
+    // delimiter character change
+    a = "."
+// Change Delimiter
+~CD = a
+    // delimiter character change
+    a = "."
+// Change the Alphanumeric Default Font
+^CF = f? (, h)? (, w)?
+    // specified default font
+    f = "[A-Z0-9]"
+    // individual character height (in dots)
+    h = "([0-9]|[1-9][0-9]{1,3}|[12][0-9]{4}|32000)"
+    // individual character width (in dots)
+    w = h
+// TODO: доделать Change International Font/Encoding
+^CI
+// Change Memory Letter Designation
+^CM = a? (, b)? (, c)? (, d)? (, e)?
+    // memory alias for B:
+    a = "[B|E|R|A]|NONE"
+    // memory alias for E:
+    b = a
+    // memory alias for R:
+    c = a
+    // memory alias for A:
+    d = a
+    // multiple alias
+    e = "M"
+// Cut Now
+^CN = a
+    // cut mode override
+    a = "[01]"
+// Cache On
+^CO = a? (, b)? (, c)?
+    // cache on
+    a = YesNo
+    // amount of additional memory to be added (in K)
+    b = "([1-9][0-9]{0,3}|[1-9][0-9]{4})"
+    // cache type
+    c = "[01]"
+// Remove Label
+^CP = a
+    // kiosk present mode
+    a = "[012]"
+// Change Tilde
+^CT = a
+    // change control command character
+    a = "."
+// Change Tilde
+~CT = a
+    // change control command character
+    a = "."
+// Code Validation
+^CV = a
+    // code validation
+    a = YesNo
+// TODO: доделать Font Identifier
+^CW
+// TODO: доделать Download Bitmap Font
+~DB
+// Download Encoding
+~DE = d : o . x , s , data
+    // device to store table
+    d = REBA
+    // name of table
+    o = "[A-Za-z0-9]{1,8}"
+    // extension
+    x = "DAT"
+    // table size
+    s = "[1-9][0-9]*"
+    // data string
+    data = "([A-F0-9]{4}\s*)+"
+// Download Format
+^DF = d : o . x
+    // device to store image
+    d = REBA
+    // image name
+    o = "[A-Za-z0-9]{1,16}"
+    // extension
+    x = "ZPL"
+// Download Graphics
+~DG = d : o . x , t , w , data
+    // device to store image
+    d = REBA
+    // image name
+    o = ~DE.o
+    // extension
+    x = "GRF"
+    // total number of bytes
+    t = ~DE.s
+    // number of bytes per row
+    w = t
+    // data string (hexadecimal)
+    data = "[A-F0-9]+"
+// ^A.ort Download Graphic
+~DN
+// Download Intellifont (Scalable Font)
+~DS = d : o . x , s , data
+    // device to store image
+    d = REBA
+    // font name
+    o = ~DE.o
+    // extension
+    x = "FNT"
+    // font size (bytes)
+    s = ~DE.s
+    // font data (hexadecimal)
+    data = ~DG.data
+// Download Bounded TrueType Font
+~DT = d : o , s , data
+    // font location
+    d = REBA
+    // font name
+    o = ~DE.o
+    // extension
+    x = "DAT"
+    // font size (bytes)
+    s = ~DE.s
+    // data string
+    data = ~DG.data
+// Download Unbounded TrueType Font
+~DU = d : o . x , s , data
+    // font location
+    d = REBA
+    // font name
+    o = ~DE.o
+    // extension
+    x = "FNT"
+    // font size (bytes)
+    s = ~DE.s
+    // data string
+    data = ~DG.data
+// Download Objects
+~DY = d : f , b , x , t , w , data
+    // file location
+    d = REBA
+    // file name
+    f = ~DE.o
+    // format in data field
+    b = "[ABCP]"
+    // extension
+    x = "[BEGPTX]|NRD|PAC|C|F|H"
+    // total number of bytes
+    t = ~DE.s
+    // bytes per row
+    w = "[0-9]*"
+    // data string
+    data = "([A-F0-9]+|[A-Za-z0-9+/=]+)?"
+// Erase Download Graphics
+~EG
+// Field Block
+^FB = a? (, b)? (, c)? (, d)? (, e)?
+    // width of text block (in dots)
+    a = "[0-9]+"
+    // maximum number of lines
+    b = "[1-9][0-9]{0,3}"
+    // add/delete space between lines
+    c = "-?[0-9]+"
+    // text justification
+    d = "[LCRJ]"
+    // hanging indent
+    e = a
+// Field Clock
+^FC = a (, b)? (, c)?
+    // primary clock indicator
+    a = "."
+    // secondary clock indicator
+    b = "."
+    // third clock indicator
+    c = "."
+// Field Data
+^FD = a
+    // field data string
+    a = ".{1,3072}"
+// Field Data Concatenation
+^FE = a
+    // concatenation delimiter any character except ^ and ~ (по умолчанию "#")
+    a = "[^\\^~]"
+// Field Hexadecimal Indicator
+^FH = a?
+    // hexadecimal indicator любой символ кроме управляющих (^ и ~), по умолчанию "_"
+    a = "[^\\^~]"
+// TODO доделать Font Linking
+^FL
+// TODO доделать Multiple Field Origin Locations
+^FM
+// TODO доделать Field Number
+^FN
+// Field Origin
+^FO = x? (, y)? (, z)?
+    // x-axis location
+    x = "[0-9]{1,5}"
+    // y-axis location
+    y = x
+    // justification
+    z = ^CP.a
+// Field Parameter
+^FP = d? (, g)?
+    // direction
+    d = "[HVR]"
+    // additional inter-character gap
+    g = "([0-9]{1,4})"
+// Field Reverse Print
+^FR
+// Field Separator
+^FS
+// Field Typeset
+^FT = x? (, y)? (, z)?
+    // x-axis location
+    x = ^FO.x
+    // y-axis location
+    y = x
+    // justification
+    z = ^CP.a
+// Field Variable
+^FV = a
+    // variable field data
+    a = ".{0,3072}"
+// Field Orientation
+^FW = r? (, z)?
+    // rotate field
+    r = ^A.o
+    // justification (firmware V60.14.x+)
+    z = ^CP.a
+// Comment
+^FX = c
+    // non-printing comment
+    c = ".*"
+// Graphic Box
+^GB = w? (, h)? (, t)? (, c)? (, r)?
+    // box width (dots)
+    w = ^FO.x
+    // box height (dots)
+    h = w
+    // border thickness (dots)
+    t = "([1-9][0-9]{0,4})"
+    // line color
+    c = "[BW]"
+    // corner-rounding (0–8)
+    r = "[0-8]"
+// Graphic Circle
+^GC = d? (, t)? (, c)?
+    // circle diameter (dots)
+    d = "([3-9]|[1-9][0-9]{1,3}|[12][0-9]{4}|4095)"
+    // border thickness
+    t = "([1-9][0-9]{0,3}|4095)"
+    // line color
+    c = "[BW]"
+// Graphic Diagonal Line
+^GD = w? (, h)? (, t)? (, c)? (, o)?
+    // box width
+    w = "([3-9]|[1-9][0-9]{1,3}|[12][0-9]{4}|32000)"
+    // box height
+    h = w
+    // border thickness
+    t = "([1-9][0-9]{0,3}|32000)"
+    // line color
+    c = "[BW]"
+    // orientation
+    o = "[R\\/]"
+// Graphic Ellipse
+^GE = w? (, h)? (, t)? (, c)?
+    // ellipse width (dots)
+    w = "([3-9]|[1-9][0-9]{1,2}|[12][0-9]{3}|3[0-9]{3}|4095)"
+    // ellipse height (dots)
+    h = w
+    // border thickness (dots)
+    t = "([1-9][0-9]{0,2}|[12][0-9]{3}|4095)"
+    // line color
+    c = "[BW]"
+// Graphic Field
+^GF = a , b , c , d , data
+    // compression type
+    a = "[ABC]"
+    // binary byte count
+    b = "([1-9][0-9]{0,4})"
+    // total number of bytes
+    c = b
+    // bytes per row
+    d = b
+    // data (ASCII hex or binary)
+    data = "([A-F0-9,\r\n]+)"
+// Graphic Symbol
+^GS = o? (, h)? (, w)?
+    // field orientation
+    o = ^A.o
+    // character height
+    h = ^FO.x
+    // character width
+    w = h
+// Battery Status
+~HB
+// Head Diagnostic
+~HD
+// Host Format
+^HF = d : o . x
+    // device to recall image
+    d = REBA
+    // image name
+    o = ~DE.o
+    // extension
+    x = ^DF.x
+// Host Graphic
+^HG = d : o . x
+    // device location of object
+    d = REBA
+    // object name
+    o = ~DE.o
+    // extension
+    x = "GRF"
+// Configuration Label Return
+^HH
+// Host Identification
+~HI
+// Host RAM Status
+~HM
+// Host Query
+~HQ = query
+    // query type
+    query = "ES" / "HA" / "JT" / "MA" / "MI" / "OD" / "PH" / "PP" / "SN" / "UI"
+// Host Status Return
+~HS
+// Host Linked Fonts List
+^HT
+// Return ZebraNet Alert Configuration
+~HU
+// Host Verification
+^HV = n (, b)? (, h)? (, t)? (, a)?
+    // field number
+    n = "([0-9]{1,4})"
+    // number of bytes to be returned
+    b = "([1-9][0-9]{0,2}|256)"
+    // header to be returned
+    h = ".{0,3072}"
+    // termination
+    t = ".{0,3072}"
+    // applies to format or label
+    a = "[FL]"
+// Host Directory List
+^HW = d : o . x (, f)?
+    // device
+    d = "[REBAZ]"
+    // object name
+    o = "[A-Za-z0-9?*]{1,8}"
+    // extension
+    x = "[A-Za-z0-9?*]{1,3}"
+    // format
+    f = "[cd]"
+// Upload Graphics
+^HY = d : o . x
+    // location of object
+    d = REBA
+    // object name
+    o = ~DE.o
+    // extension
+    x = "GRF" / "PNG"
+// Display Description Information
+^HZ = b
+    // description type
+    b = "[aflor]"
+// Display Description Information
+^HZO = , d : o . x (, l)?
+    // location of stored object
+    d = REBA
+    // object name
+    o = "[A-Za-z0-9]{1,16}"
+    // extension
+    x = "(FNT|GRF|PNG|ZPL|DAT|ZOB|STO)"
+    // long filename support
+    l = "[YN]"
+// Object Delete
+^ID = d : o . x
+    // device
+    d = REBA
+    // object name (supports wildcards)
+    o = "[A-Za-z0-9*]{1,8}"
+    // extension (supports wildcards)
+    x = "[A-Za-z0-9*]{1,3}"
+// Image Load
+^IL = d : o . x
+    // device
+    d = REBA
+    // object name
+    o = ~DE.o
+    // extension
+    x = "(GRF|PNG)"
+// Image Move
+^IM = d : o . x
+    // device
+    d = REBA
+    // object name
+    o = ~DE.o
+    // extension
+    x = "(GRF|PNG)"
+// Image Save
+^IS = d : o . x (, p)?
+    // device
+    d = REBA
+    // object name
+    o = ~DE.o
+    // extension
+    x = "(GRF|PNG)"
+    // print image after storing
+    p = YesNo
+// Cancel All
+~JA
+// Initialize Flash Memory
+^JB = a
+    // device to initialize
+    a = "[ABE]"
+// Reset Optional Memory
+~JB
+// Set Media Sensor Calibration
+~JC
+// Enable Communications Diagnostics
+~JD
+// Disable Diagnostics
+~JE
+// Set Battery Condition
+~JF = p
+    // pause on low voltage
+    p = YesNo
+// Graphing Sensor Calibration
+~JG
+// Early Warning Settings
+^JH = a? (, b)? (, c)? (, d)? (, e)? (, f)? (, g)? (, h)? (, i)? (, j)?
+    // early warning media
+    a = "[ED]"
+    // labels per roll (only some printers)
+    b = "([1-9][0-9]{2,3}|9999)"
+    // media replaced
+    c = YesNo
+    // ribbon length (varies by printer model)
+    d = "(N|[0-9]{1,2})"
+    // ribbon replaced
+    e = YesNo
+    // early warning maintenance
+    f = "[ED]"
+    // head cleaning interval
+    g = "(0|[1-9]|1[0-6])"
+    // head clean
+    h = YesNo
+    // head life threshold
+    i = "([0-9]{2,7})"
+    // head replaced
+    j = YesNo
+// Start ZBI (Zebra BASIC Interpreter)
+^JI = d : o . x (, b)? (, c)? (, m)?
+    // location of program
+    d = REBA
+    // program name
+    o = ~DE.o
+    // extension
+    x = "(BAS|BAE)"
+    // console control
+    b = YesNo
+    // echo control
+    c = YesNo
+    // memory allocation (only in older FW)
+    m = "([2-9][0-9]K|[1-9][0-9]{2,3}K|1024K)"
+// Start ZBI (alternate form)
+~JI
+// Set Auxiliary Port
+^JJ = a? (, b)? (, c)? (, d)? (, e)? (, f)?
+    // operational mode
+    a = ^CP.a
+    // application mode
+    b = "[0-4]"
+    // application start signal
+    c = "[pl]"
+    // application label error mode
+    d = "[ef]"
+    // reprint mode
+    e = "[ed]"
+    // ribbon low mode
+    f = e
+// Set Label Length
+~JL
+// Set Dots per Millimeter
+^JM = n
+    // dot density mode
+    n = "[AB]"
+// Head Test Fatal
+~JN
+// Head Test Non-Fatal
+~JO
+// Pause and Cancel Format
+~JP
+// Terminate Zebra BASIC Interpreter
+~JQ
+// Power On Reset
+~JR
+// Sensor Select
+^JS = a
+    // sensor selection
+    a = "[ART]"
+// Change Backfeed Sequence
+~JS = b
+    // backfeed order
+    b = "A" / "B" / "N" / "O" / "(10|20|30|40|50|60|70|80|90|100)"
+// Head Test Interval
+^JT = n (, a)? (, b)? (, c)?
+    // number of labels between tests
+    n = "([0-9]{4})"
+    // manually select range
+    a = YesNo
+    // first element
+    b = "([0-9]{1,4})"
+    // last element
+    c = b
+// Configuration Update
+^JU = a
+    // active configuration
+    a = "[AFNRS]"
+// Set Ribbon Tension
+^JW = t
+    // tension
+    t = "[LMH]"
+// Cancel Current Partially Input Format
+~JX
+// Reprint After Error
+^JZ = a
+    // reprint after error
+    a = YesNo
+// Kill Battery (Battery Discharge Mode)
+~KB
+// Select Date and Time Format (RTC)
+^KD = a
+    // date and time format
+    a = "[0-4]"
+// Define Language
+^KL = a
+    // language
+    a = "(1[0-9]|20|[1-9])"
+// Define Printer Name
+^KN = a? (, b)?
+    // printer name
+    a = "[A-Za-z0-9]{0,16}"
+    // printer description
+    b = "[A-Za-z0-9]{0,35}"
+// Define Password
+^KP = a (, b)?
+    // mandatory 4-digit password
+    a = "[0-9]{4}"
+    // password level (S4M only)
+    b = "[1-4]"
+// Kiosk Values
+^KV = a? (, b)? (, c)? (, d)? (, e)?
+    // kiosk cut amount
+    a = "(0|[1-5][0-9]|60)"
+    // kiosk cut margin
+    b = "[2-9]"
+    // kiosk present type
+    c = ^CP.a
+    // kiosk present timeout (sec)
+    d = "([0-9]|[1-9][0-9]{1,2}|[12][0-9]{3}|300)"
+    // kiosk presenter loop length
+    e = "([0-9]|[1-9][0-9]{1,2}|[1-9][0-9]{3}|1023)"
+// List Font Links
+^LF
+// Label Home
+^LH = x? (, y)?
+    // x-axis home (dots)
+    x = ^FO.x
+    // y-axis home (dots)
+    y = x
+// Label Length
+^LL = y (. x)?
+    // label length
+    y = "([1-9][0-9]{0,4}|32000)"
+    // apply to all media (optional)
+    x = YesNo
+// Label Reverse Print
+^LR = a
+    // reverse print all fields
+    a = YesNo
+// Label Shift
+^LS = a
+    // shift left (dots)
+    a = "(-?[0-9]{1,4})"
+// Label Top
+^LT = x
+    // label top offset (dots)
+    x = "(-?[0-9]{1,4})"
+// Set Maintenance Alerts
+^MA = type_ , print , threshold , frequency , units
+    // type of alert
+    type_ = "[RC]"
+    // print label
+    print = YesNo
+    // distance threshold
+    threshold = "([0-9]{1,4})"
+    // frequency
+    frequency = "([0-9]{1,4})"
+    // units
+    units = "[CIM]"
+// Map Clear
+^MC = a
+    // clear bitmap after printing
+    a = YesNo
+// Media Darkness
+^MD = a
+    // darkness adjustment
+    a = "(-?[0-9]{1,2}(\.[0-9])?)"
+// Media Feed
+^MF = p? (, h)?
+    // feed action at power-up
+    p = "[FCLNS]"
+    // feed action after head close
+    h = "[FCLNS]"
+// Set Maintenance Information Message
+^MI = type_ , message
+    // type of alert
+    type_ = "[RC]"
+    // custom message (max 63 chars, без запятых)
+    message = "[^,]{1,63}"
+// Maximum Label Length
+^ML = a
+    // maximum label length (dots)
+    a = "([1-9][0-9]{0,4}|32000)"
+// Print Mode
+^MM = a (, b)?
+    // print mode
+    a = "[TPRACDFLUK]"
+    // prepeel select
+    b = YesNo
+// Media Tracking
+^MN = a (, b)?
+    // media type
+    a = "[NYWMA V]"
+    // black mark offset (dots)
+    b = "(-?[0-9]{1,3}|[12][0-9]{2}|566)"
+// Mode Protection
+^MP = a
+    // mode to protect
+    a = "[DPCE SWFXM]"
+// Media Type
+^MT = a
+    // media type
+    a = "[TD]"
+// Units of Measurement
+^MU = a (, b)? (, c)?
+    // units
+    a = "[DIMd]"
+    // format base dpi
+    b = "(150|200|300)"
+    // desired conversion dpi
+    c = "(150|200|300|600)"
+// Modify Head Cold Warning
+^MW = a
+    // enable head cold warning
+    a = YesNo
+// Advanced Text Properties
+^PA = a? (, b)? (, c)? (, d)?
+    // default glyph
+    a = "[01]"
+    // bidirectional layout
+    b = "[01]"
+    // character shaping
+    c = "[01]"
+    // OpenType table support
+    d = "[01]"
+// Slew Given Number of Dot Rows
+^PF = n
+    // rows to slew
+    n = ^FO.x
+// Slew to Home Position
+^PH
+// Slew to Home Position
+~PH
+// Present Length Addition (KR403 only)
+~PL = a
+    // additional eject length (mm)
+    a = "([0-9]{3})"
+// Printing Mirror Image of Label
+^PM = a
+    // mirror mode
+    a = YesNo
+// Decommissioning Mode
+~PM = a (, b)?
+    // printer serial number
+    a = "[A-Za-z0-9]+"
+    // number of flash wipe-outs
+    b = "([0-3])"
+// Present Now (KR403 only)
+^PN = a
+    // eject length (mm)
+    a = "([0-9]{1,3})"
+// Print Orientation
+^PO = a
+    // orientation
+    a = "[NI]"
+// Programmable Pause
+^PP
+// Programmable Pause
+~PP
+// Print Quantity
+^PQ = q (, p)? (, r)? (, o)? (, e)?
+    // total labels to print
+    q = "([1-9][0-9]{0,7})"
+    // pause and cut value
+    p = "([0-9]{1,8})"
+    // replicates of each serial number
+    r = "([0-9]{1,8})"
+    // override pause count
+    o = YesNo
+    // cut on error label
+    e = YesNo
+// Applicator Reprint
+~PR
+// Print Rate
+^PR = p? (, s)? (, b)?
+    // print speed
+    p = "[A-E1-14]"
+    // slew speed
+    s = "[A-E1-14]"
+    // backfeed speed
+    b = "[A-E1-14]"
+// Print Start
+~PS
+// Print Width
+^PW = a
+    // label width (dots)
+    a = ^FO.x
+// Reset Advanced Counters
+~RO = c
+    // counter number
+    c = "[1234CR]"
+// Set Serial Communications
+^SC = a , b , c , d , e , f
+    // baud rate
+    a = "(110|300|600|1200|2400|4800|9600|14400|19200|28800|38400|57600|115200)"
+    // word length
+    b = "[78]"
+    // parity
+    c = "[NEO]"
+    // stop bits
+    d = "[12]"
+    // protocol mode
+    e = "[XDRM]"
+    // Zebra protocol
+    f = "[ANZ]"
+// Set Darkness
+~SD = a
+    // darkness setting
+    a = "([0-2]?[0-9](\.[0-9])?|30(\.0)?)"
+// Select Encoding Table
+^SE = d : o . x
+    // device
+    d = REBA
+    // table name
+    o = ~DE.o
+    // extension
+    x = "DAT"
+// Serialization Field (with Standard ^FD String)
+^SF = a (, b)?
+    // mask string
+    a = ".{1,3072}"
+    // increment string
+    b = ".{1,3072}"
+// Set Sensor Intensity
+^SI = a , b
+    // sensor type
+    a = "[12]"
+    // sensor value
+    b = "([0-9]{1,3}|1[0-8][0-9]|19[0-6])"
+// Set Mode and Language (RTC)
+^SL = a (, b)?
+    // mode
+    a = "[ST]|[0-9]{1,3}"
+    // language
+    b = "(1[0-8]|[1-9])"
+// Serialization Data
+^SN = v (, n)? (, z)?
+    // starting value
+    v = "[-]?[0-9]{1,12}"
+    // increment/decrement
+    n = "[-]?[0-9]{1,12}"
+    // leading zeros
+    z = YesNo
+// Set Offset (RTC)
+^SO = a , b , c , d , e , f , g
+    // clock set (secondary or third)
+    a = "[23]"
+    // months offset
+    b = "(-?[0-9]{1,5})"
+    // days offset
+    c = "(-?[0-9]{1,5})"
+    // years offset
+    d = "(-?[0-9]{1,5})"
+    // hours offset
+    e = "(-?[0-9]{1,5})"
+    // minutes offset
+    f = "(-?[0-9]{1,5})"
+    // seconds offset
+    g = "(-?[0-9]{1,5})"
+// Start Print
+^SP = a
+    // dot row to start printing
+    a = ^FO.x
+// Halt ZebraNet Alert
+^SQ = a , b (, c)?
+    // condition type
+    a = "[A-VW*]"
+    // destination
+    b = "[ABCDEF*]"
+    // halt messages
+    c = YesNo
+// Set Printhead Resistance
+^SR = n
+    // resistance value
+    n = "(0[4-9][0-9]{2}|0[5-9][0-9]{2}|1[01][0-9]{2}|1175)"
+// Set Media Sensors
+^SS = w , m , r , l , m2 , r2 , a , b , c
+    // web
+    w = "([0-9]{3})"
+    // media
+    m = "([0-9]{3})"
+    // ribbon
+    r = "([0-9]{3})"
+    // label length
+    l = "([0-9]{4,5})"
+    // media LED intensity
+    m2 = "([0-9]{3})"
+    // ribbon LED intensity
+    r2 = "([0-9]{3})"
+    // mark sensing
+    a = "([0-9]{3})"
+    // mark media sensing
+    b = "([0-9]{3})"
+    // mark LED sensing
+    c = "([0-9]{3})"
+// Set Date and Time (RTC)
+^ST = a , b , c , d , e , f , g
+    // month
+    a = "(0[1-9]|1[0-2])"
+    // day
+    b = "(0[1-9]|[12][0-9]|3[01])"
+    // year
+    c = "(199[8-9]|20[0-9]{2}|209[0-7])"
+    // hour
+    d = "([01][0-9]|2[0-3])"
+    // minute
+    e = "([0-5][0-9])"
+    // second
+    f = "([0-5][0-9])"
+    // format
+    g = "[APM]"
+// Set ZebraNet Alert
+^SX = a , b , c , d (, e)? (, f)?
+    // condition type
+    a = "[A-V*PQRUVW]"
+    // destination
+    b = "[ABCDEF]"
+    // condition set alert
+    c = YesNo
+    // condition clear alert
+    d = YesNo
+    // destination setting (email, IP, etc.)
+    e = ".+"
+    // port number
+    f = ^FO.x
+// Set ZPL Mode
+^SZ = a
+    // ZPL version
+    a = "[12]"
+// Tear-off Adjust Position
+~TA = n
+    // media rest adjustment (dot rows)
+    n = "(-?(0[0-9]{2}|1[01][0-9]|120))"
+// Text Blocks
+^TB = a , b , c
+    // block rotation
+    a = ^A.o
+    // block width (dots)
+    b = "([1-9][0-9]{0,4})"
+    // block height (dots)
+    c = b
+// Transfer Object
+^TO = s : o . x , d : o2 . x2
+    // source device
+    s = REBA
+    // source name
+    o = "[A-Za-z0-9*]{1,8}"
+    // source extension
+    x = "[A-Za-z0-9*]{1,3}"
+    // destination device
+    d = REBA
+    // destination name
+    o2 = "[A-Za-z0-9*]{1,8}"
+    // destination extension
+    x2 = "[A-Za-z0-9*]{1,3}"
+// Print Configuration Label
+~WC
+// TODO: доделать Print Directory Label
+^WD
+// Write Query
+~WQ = query
+    // query type
+    query = "ES" / "HA" / "JT" / "MA" / "MI" / "OD" / "PH" / "PP" / "SN" / "UI"
+// Start Format
+^XA
+// Suppress Backfeed
+^XB
+// Recall Format
+^XF = d : o . x
+    // device
+    d = REBA
+    // format name
+    o = ~DE.o
+    // extension
+    x = ^DF.x
+// Recall Graphic
+^XG = d : o . x (, mx)? (, my)?
+    // device
+    d = REBA
+    // image name
+    o = ~DE.o
+    // extension
+    x = "GRF"
+    // magnification x
+    mx = ^B0.b
+    // magnification y
+    my = mx
+// Set Dynamic Media Calibration
+^XS = length (, threshold)? (, gain)?
+    // length calibration
+    length = YesNo
+    // threshold calibration
+    threshold = YesNo
+    // gain calibration (future use)
+    gain = YesNo
+// End Format
+^XZ
+// Printer Sleep (PA/PT400 only)
+^ZZ = t (, b)?
+    // idle time before shutdown (sec)
+    t = "([0-9]{1,6})"
+    // shutdown with labels pending
+    b = YesNo

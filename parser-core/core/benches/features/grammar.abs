@@ -1,0 +1,597 @@
+Program (
+    #[ignore] I
+    Session+
+    #[ignore] I
+)
+    Session {
+        Label(LabelSession)
+        Utilities(UtilitiesSession)
+        U1(U1CmdExpr*)
+    }
+        LabelSession {
+            start: CommandStart,
+            commands: EndCommands<Command>,
+            end: Cmd<EndCmd>,
+        }
+            CommandStart { Bang, I, x_offset: IntLit, I, x_dpi: IntLit, I, y_dpi: IntLit, I, max_height: IntLit, I, quantity: IntLit, I, EOL, }
+        UtilitiesSession {
+            Cmd<Bang I "(UTILITIES|U)">,
+            commands: EndCommands<UtilitiesCmd>,
+            end: Cmd<EndCmd>,
+        }
+        U1CmdExpr (
+            #[ignore] (Bang I "U1" I)
+            Cmd<U1Cmd>
+        )
+
+        EndCommands<C> {
+            commands: (Cmd<FormCommands<C>>* Cmd<"END">)*,
+            tail: Cmd<FormCommands<C>>*,
+        }
+            FormCommands<C> {
+                commands: (Cmd<C>* Cmd<"FORM">)*,
+                tail: Cmd<C>*,
+            }
+        EndCmd {
+            Print("PRINT")
+            Abort("ABORT")
+        }
+        Cmd<C> (
+            C
+            #[ignore] (I EOL)
+        )
+Command {
+    LabelKw("LABEL")
+
+    Justify(JustifyCmd)
+
+    TextT(TTextCmd)
+    TextVariant(TextVariantCmd)
+
+    SetMag(SetMagCmd)
+    Underline(UnderlineCmd)
+    InverseText(InverseTextCmd)
+
+    BarcodeText(BarcodeTextCmd)
+    Barcode1D(Barcode1DCmd)
+
+    Pdf417(Pdf417Cmd)
+    MaxiCode(MaxiCodeCmd)
+    Qr(QrCmd)
+    Aztec(AztecCmd)
+    DataMatrix(DmCmd)
+    MicroPdf417(MpCmd)
+    RSSComposite(RSSCompositeCmd)
+
+    Fim(FimCmd)
+
+    Graphics(GraphicsCmd)
+    Pattern(PatternCmd)
+    Box(BoxCmd)
+    Line(LineCmd)
+    InverseLine(InverseLineCmd)
+    InverseBox(InverseBoxCmd)
+    EraseBox(EraseBoxCmd)
+    Shade(ShadeCmd)
+    FillBox(FillBoxCmd)
+
+    Concat(ConcatBlock)
+    Rotate(RotateCmd)
+
+    Pcx(PcxCmd)
+
+    Count(CountCmd)
+    PrintParam(PrintParamCmd)
+
+    Common(CommonCmd)
+
+    Calibrate("CALIBRATE")
+    Feed(FeedCmd)
+    Backfeed(BackfeedCmd)
+    Rewind("REWIND-ON" / "REWIND-OFF")
+    Peel(PeelCmd)
+    Reprint("REPRINT")
+
+    VarDecl(VarDeclCmd)
+    Date(DateCmd)
+    Time(TimeCmd)
+    Prompt(PromptCmd)
+    NewCount(NewCountCmd)
+    ResetCount(ResetCountCmd)
+    CountSet(CountSetCmd)
+}
+    JustifyCmd { mode: JustifyMode, I, end: IntLit? }
+        JustifyMode { LEFT("LEFT") CENTER("CENTER") RIGHT("RIGHT") }
+    TTextCmd { "T", I, font: IntLit, I, rotation: IntLit, I, x: IntLit, I, y: IntLit, I, text: StrLit }
+    TextVariantCmd { variant: TextVariant, I, font: IntLit, I, size: IntLit, I, x: IntLit, I, y: IntLit, I, text: StrLit }
+        TextVariant {
+            TEXT("TEXT") VTEXT("VTEXT") VT("VT")
+            TEXT90("TEXT90") T90("T90")
+            TEXT180("TEXT180") T180("T180")
+            TEXT270("TEXT270") T270("T270")
+        }
+    SetMagCmd { "SETMAG", I, x: IntLit, I, y: IntLit }
+    UnderlineCmd ( #[ignore] ("UNDERLINE" I) OnOff )
+    InverseTextCmd { InverseTextKw, I, mode: OnOff }
+        InverseTextKw { INVERSE_TEXT("INVERSE-TEXT") REVERSE_TEXT("REVERSE-TEXT") }
+    BarcodeTextCmd (
+        #[ignore] "(BARCODE-TEXT|BT)"
+        #[ignore] I
+        BarcodeTextV
+    )
+        BarcodeTextV {
+            Base(BarcodeTextBase)
+            Off(OFF_KW)
+        }
+            BarcodeTextBase (
+                IntLit
+                #[ignore] I
+                IntLit
+                #[ignore] I
+                IntLit
+            )
+    Barcode1DCmd {
+        BARCODE_KW,
+        I,
+        symbology: OneDType,
+        I,
+        narrow: IntLit, I, wide: IntLit, I, height: IntLit,
+        I,
+        x: IntLit, I, y: IntLit,
+        I,
+        data: Barcode1DData,
+        opts: (I OneDOpt)*,
+    }
+        // 1D: тип/данные/опции
+        OneDType { Num(IntLit) Name(OneDTypeName) }
+            OneDTypeName {
+                CODE39("CODE39") CODE93("CODE93") CODE128("CODE128")
+                ITF("ITF") I2OF5("I2OF5")
+                CODABAR("CODABAR") MSI("MSI") PLESSEY("PLESSEY")
+                POSTNET("POSTNET") PLANET("PLANET")
+                EAN13("EAN13") EAN8("EAN8")
+                UPCA("UPCA") UPCE("UPCE")
+                UCCEAN128("(?:UCC-?EAN-?128|GS1-?128)")
+                RM4SCC("RM4SCC") KIX("KIX") AUSPOST("(?:AUSPOST|AUSTRALIA-?POST)")
+            }
+        Barcode1DData { main: StrOrBare, addon: (I StrOrBare)?, }
+        OneDOpt {
+            Checksum("CHECKSUM")
+            NoChecksum("(?:NO-?CHECKSUM|NOCHECKSUM)")
+            Mod10("MOD10") Mod11("MOD11") Mod1010("MOD1010") Mod1110("MOD1110")
+            StartStop("(?:START-?STOP|STARTSTOP)") NoStartStop("(?:NO-?START-?STOP|NOSTARTSTOP)")
+            Quiet(QuietOpt)
+            Ratio(RatioOpt) BearerBar(BearerBarOpt)
+            FullAscii(FullAsciiOpt)
+            CodaStart(CodabarStartOpt) CodaStop(CodabarStopOpt)
+            ZipLen(ZipLenOpt) Dashes(DashesOpt) BarHeight(BarHeightOpt) Space(SpaceOpt)
+            UpceMode(UpceModeOpt) GuardBars(GuardBarsOpt) AuspostFmt(AuspostFmtOpt)
+        }
+            QuietOpt        { "QUIET",              I, left: IntLit, I, right: IntLit }
+            RatioOpt        ( #[ignore] ("RATIO" I) NumberLit )
+            BearerBarOpt    ( #[ignore] ("(?:BEARER-?BAR)" I) IntLit )
+            FullAsciiOpt    ( #[ignore] ("FULLASCII" I) OnOff )
+            CodabarStartOpt ( #[ignore] ("START" I) CodaLetter )
+            CodabarStopOpt  ( #[ignore] ("STOP" I) CodaLetter )
+                CodaLetter      { A("A") B("B") C("C") D("D") }
+            ZipLenOpt       ( #[ignore] ("ZIP" I) ZipLenVal )
+                ZipLenVal   { L5("5") L9("9") L11("11") }
+            DashesOpt       ( #[ignore] ("DASHES" I) OnOff )
+            BarHeightOpt    ( #[ignore] ("BAR-HEIGHT" I) IntLit )
+            SpaceOpt        ( #[ignore] ("SPACE" I) IntLit )
+            UpceModeOpt     ( #[ignore] ("UPCE-?MODE" I) UpceModeVal )
+                UpceModeVal { EXPAND("EXPAND") COMPRESS("COMPRESS") }
+            GuardBarsOpt    ( #[ignore] ("GUARD-?BARS" I) OnOff )
+            AuspostFmtOpt   ( #[ignore] ("AUS-?FMT" I) AusFmtVal )
+                AusFmtVal   { N("N") C("C") D("D") Z("Z") }
+    // 2D shared
+    Pdf417Cmd { head: Cmd<Pdf417Head>, data: Barcode2DData, end: "ENDPDF" }
+        Pdf417Head  { Barcode2DStarter, I, typ: "PDF-417", I, x: IntLit, I, y: IntLit, opts: (I Pdf417Opt)*, }
+            Pdf417Opt { XD(XD_KW I IntLit) YD("YD" I IntLit) C("C" I IntLit) S("S" I IntLit) }
+    MaxiCodeCmd { head: Cmd<MaxiCodeHead>, tags: Cmd<MaxiTagLine>*, end: "ENDMAXICODE" }
+        MaxiCodeHead{ Barcode2DStarter, I, typ: "MAXICODE", I, x: IntLit, I, y: IntLit, }
+        MaxiTagLine { tag: UpperIdent, I, value: StrOrBare, }
+    QrCmd { head: Cmd<QrHead>, data: Barcode2DData, end: "ENDQR" }
+        QrHead { Barcode2DStarter, I, typ: "QR", I, x: IntLit, I, y: IntLit, opts: (I QrOpt)*, }
+            QrOpt { M("M" I IntLit) U("U" I IntLit) }
+    AztecCmd { head: Cmd<AztecHead>, data: Barcode2DData, end: "ENDAZTEC" }
+        AztecHead  { Barcode2DStarter, I, typ: "AZTEC", I, x: IntLit, I, y: IntLit, opts: (I AztecOpt)*, }
+            AztecOpt { XD(XD_KW I IntLit) EC("EC" I IntLit) }
+    DmCmd { head: Cmd<DmHead>, data: Barcode2DData, end: "(?:ENDDATAMATRIX|END-DATAMATRIX|ENDDM)" }
+        DmHead { Barcode2DStarter, I, typ: "(?:DATAMATRIX|DATA-?MATRIX|DMATRIX)", I, x: IntLit, I, y: IntLit, opts: (I DmOpt)*, }
+            DmOpt { XD(XD_KW I IntLit) QZ("QZ" I OnOff) RS("RS" I IntLit) CS("CS" I IntLit) }
+    MpCmd { head: Cmd<MpHead>, data: Barcode2DData, end: "(?:ENDMICROPDF417|END-MICROPDF417)" }
+        MpHead { Barcode2DStarter, I, typ: "(?:MICROPDF417|MICRO-?PDF417)", I, x: IntLit, I, y: IntLit, opts: (I MpOpt)*, }
+            MpOpt { XD(XD_KW I IntLit) C("C" I IntLit) R("R" I IntLit) }
+
+        Barcode2DStarter { BARCODE(BARCODE_KW) B(B_KW) VBARCODE(VBARCODE_KW) VB(VB_KW) }
+        Barcode2DData = Cmd<StrOrBare+>+
+        unit XD_KW = "XD"
+
+    RSSCompositeCmd {
+        starter: RSSStarter, I, typ: "RSS", I,
+        x: IntLit, I, y: IntLit, I, width: IntLit, I, linear_height: IntLit, I, separator_height: IntLit, I,
+        segments: IntLit, I, subtype: IntLit, I, payload: RSSPayload
+    }
+        RSSStarter { BARCODE(BARCODE_KW) B(B_KW) VBARCODE(VBARCODE_KW) VB(VB_KW) }
+            RSSPayload { Linear(StrOrBare) LinearPlus2D(RSSLinearAnd2D) }
+                RSSLinearAnd2D { linear: StrOrBare, I, bar: "|", I, composite: StrOrBare, }
+    FimCmd { "FIM", I, kind: FimKind, I, x: IntLit, I, y: IntLit }
+        FimKind { A("A") B("B") C("C") D("D") E("E") }
+
+    // графика (растр)
+    GraphicsCmd {
+        mode: GraphicsMode,
+        I,
+        byte_width: IntLit,
+        I, height: IntLit,
+        I,
+        x: IntLit,
+        I,
+        y: IntLit,
+        I,
+        data: "[0-9A-F]+"
+    }
+        GraphicsMode { EG("(?:EXPANDED-GRAPHICS|EG)") VEG("(?:VEXPANDED-GRAPHICS|VEG)") CG("(?:COMPRESSED-GRAPHICS|CG)") VCG("(?:VCOMPRESSED-GRAPHICS|VCG)") }
+
+    // геометрия
+    PatternCmd (
+        #[ignore] ("PATTERN" I)
+        IntLit
+    )
+    BoxCmd     { "BOX", I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit, I, width: IntLit }
+    LineCmd    { LineKw, I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit, I, width: IntLit }
+        LineKw { LINE("LINE") L("L") }
+    InverseLineCmd { InverseLineKw, I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit, I, width: IntLit }
+        InverseLineKw { IL("IL") INVERSE_LINE("INVERSE-LINE") }
+    InverseBoxCmd { "INVERSE-BOX", I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit }
+    EraseBoxCmd   { "ERASE-BOX", I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit }
+    ShadeCmd   ( #[ignore] ("SHADE" I) IntLit )
+    FillBoxCmd { "FILL-BOX", I, x0: IntLit, I, y0: IntLit, I, x1: IntLit, I, y1: IntLit }
+
+    // scalable text concat + rotate
+    ConcatBlock { head: Cmd<ConcatStart>, items: Cmd<STLine>{1,}, tail: "ENDCONCAT" }
+        ConcatStart { mode: ConcatMode, I, x: IntLit, I, y: IntLit, }
+            ConcatMode { CONCAT("CONCAT") VCONCAT("VCONCAT") }
+        STLine { st: "ST", I, name: UpperIdent, I, width: IntLit, I, height: IntLit, I, offset: IntLit, I, text: StrLit, }
+    RotateCmd ( #[ignore] ("(ROTATE|R)" I) IntLit )
+
+    // PCX
+    PcxCmd {
+        PCX_KW, I,
+        variant: PcxV
+    }
+        PcxV {
+            Pcx(PcxBase)
+            PcxFromFile(PcxFromFile)
+        }
+            // Байты не входят в текстовую грамматику CPCL.
+            // Команда PCX x y — это текстовый заголовок, после которого на транспортном уровне сразу же передаётся бинарный поток PCX.
+            PcxBase { x: IntLit, I, y: IntLit}
+            PcxFromFile { x: IntLit, I, y: IntLit, I, bang_lt: BANG_LT, I, filename: FileName }
+
+    // счётчики/параметры/комменты
+    CountCmd ( #[ignore] ("COUNT" I) SignedInt20 )
+    PrintParamCmd { bang_lt: BANG_LT, I, path: ParamPath }
+
+    unit PCX_KW = "PCX"
+    unit BANG_LT = "!\<"
+
+    // сервис печати/механика
+    FeedCmd     ( #[ignore] ("FEED" I)     IntLit  )
+    BackfeedCmd ( #[ignore] ("BACKFEED" I) IntLit  )
+    PeelCmd     ( #[ignore] ("PEEL" I)     OnOff   )
+        OnOff { ON(ON_KW) OFF(OFF_KW) }
+
+    // формы/переменные/ввод
+    VarDeclCmd { "VAR", I, name: VAR_NAME, format: (I StrLit)? }
+    DateCmd ( #[ignore] "DATE" (I StrLit)? )
+    TimeCmd ( #[ignore] "TIME" (I StrLit)? )
+    PromptCmd { "PROMPT", I, label: StrLit, I, name: VAR_NAME }
+    NewCountCmd {
+        "NEWCOUNT", I, name: VAR_NAME, I, start: SignedIntLit, I,
+        step: SignedIntLit?, I, base_kw: "BASE"?, base: (I IntLit)?, I,
+        reset_kw: "RESET"?, reset: (I IntLit)?,
+    }
+    ResetCountCmd ( #[ignore] ("RESETCOUNT" I) VAR_NAME )
+    CountSetCmd { "COUNT-SET", I, name: VAR_NAME, I, value: SignedIntLit }    
+    
+    VAR_NAME = "[A-Za-z_][A-Za-z0-9_]*"
+UtilitiesCmd {
+    Version("VERSION")
+    Dir(DirCmd)
+    Type(TypeCmd)
+    Del(DelCmd)
+    Copy(CopyCmd)
+    Rename(RenameCmd)
+    TypeWildcard(TypeCmdWildcard)
+    DelWildcard(DelCmdWildcard)
+    CopyWildcard(CopyCmdWildcard)
+    RenameWildcard(RenameCmdWildcard)
+    PrintFile(PrintFileCmd)
+    Df("DF")
+    EraseAll("(ERASE-ALL|ERASEALL)")
+    Mkdir(MkdirCmd)
+    Rmdir(RmdirCmd)
+    Beep(BeepCmd)
+    Timeout(TimeoutCmd)
+    Country(CountryCmd)
+    CharSet(CharSetCmd)
+    LT(LTCmd)
+    Setff(SetffCmd)
+    SetTof(SetTofCmd)
+    SrfAccess("SRF-ACCESS")
+    EndSrfAccess("END-SRF-ACCESS")
+    BhtProtocol(BhtProtocolCmd)
+    BhtBaud(BhtBaudCmd)
+    BhtMode(BhtModeCmd)
+    U1(U1Cmd)
+    Common(CommonCmd)
+}
+    // Utilities: базовые
+    DirCmd (
+        #[ignore] ("DIR" I)
+        DirCmdV
+    )
+        DirCmdV {
+            DirCmd(EOL)
+            DirWildcardCmd(FileNamePattern)
+        }
+    TypeCmd             ( #[ignore] ("TYPE" I) FileName )
+    DelCmd              ( #[ignore] ("DEL" I) FileName )
+    CopyCmd             { "COPY",   I, src: FileName,           I, dst: FileName,          }
+    RenameCmd           { "RENAME", I, src: FileName,           I, dst: FileName,          }
+    TypeCmdWildcard     ( #[ignore] ("TYPE" I) FileNamePattern )
+    DelCmdWildcard      ( #[ignore] ("DEL" I) FileNamePattern )
+    CopyCmdWildcard     { "COPY",   I, src: FileNamePattern,    I, dst: FileNamePattern,   }
+    RenameCmdWildcard   { "RENAME", I, src: FileNamePattern,    I, dst: FileNamePattern,   }
+    PrintFileCmd        ( #[ignore] ("PRINTFILE" I) FileNamePattern )
+    MkdirCmd            ( #[ignore] ("MKDIR" I) FileName )
+    RmdirCmd            ( #[ignore] ("RMDIR" I) FileName )
+    BeepCmd             ( #[ignore] ("BEEP" I) IntLit )
+    TimeoutCmd          ( #[ignore] ("TIMEOUT" I) IntLit )
+    CountryCmd          ( #[ignore] ("COUNTRY" I) UpperIdent )
+    CharSetCmd          ( #[ignore] ("CHAR-SET" I) UpperIdent )
+    LTCmd               ( #[ignore] ("LT" I) LTMode )
+        LTMode { CR("CR") LF("LF") CR_LF("CR-LF") CR_X_LF("CR-X-LF") }
+
+    SetffCmd    { "SETFF", I, max_feed: NumberLit, I, skip_len: NumberLit, }
+    SetTofCmd   { "SET-TOF", I, distance: SignedIntLit, }
+    
+
+    // BHT
+    BhtProtocolCmd { "BHT-PROTOCOL", I, mode: BhtProtocolMode, }
+        BhtProtocolMode { BHT("BHT") CABLE("CABLE") BHTIR("BHTIR") }
+    BhtBaudCmd { "BHT-BAUD", I, rate: IntLit, }
+    BhtModeCmd { "BHT-MODE", I, mode: BhtMode, }
+        BhtMode { STRIP_ADD_CRLF("STRIP-ADD-CRLF") RAW("RAW") COUNTED_STRING("COUNTED-STRING") STRIP_SPACES("STRIP-SPACES") }
+U1Cmd {
+        GetVar(U1GetVarCmd) U1SetVar(U1SetVarCmd) U1Do(U1DoCmd)
+        DoDeviceReset(U1DoDeviceResetCmd)
+        DoDeviceRestoreDefaults(U1DoDeviceRestoreDefaultsCmd)
+        SetvarPrintSpeed(U1SetvarPrintSpeedCmd)
+        SetvarPrintContrast(U1SetvarPrintContrastCmd)
+        GetvarPrintSpeed(U1GetvarPrintSpeedCmd)
+        GetvarPrintContrast(U1GetvarPrintContrastCmd)
+        SetvarMediaType(U1SetvarMediaTypeCmd)
+        GetvarMediaType(U1GetvarMediaTypeCmd)
+        SetvarIpAddr(U1SetvarIpAddrCmd)
+        GetvarIpAddr(U1GetvarIpAddrCmd)
+        SetvarWlanSsid(U1SetvarWlanSsidCmd)
+        SetvarWlanSecurity(U1SetvarWlanSecurityCmd)
+        GetvarWlanSsid(U1GetvarWlanSsidCmd)
+        GetvarWlanSecurity(U1GetvarWlanSecurityCmd)
+        SetvarBtName(U1SetvarBtNameCmd)
+        GetvarBtName(U1GetvarBtNameCmd)
+
+        Lan(U1Lan)
+
+        Setlp(U1SetlpCmd)
+        Setlf(U1SetlfCmd)
+        SetlpTimeout(U1SetlpTimeoutCmd)
+        MoveX(U1MoveXCmd) U1MoveY(U1MoveYCmd) U1MoveXY(U1MoveXYCmd)
+        MoveRX(U1MoveRXCmd) U1MoveRY(U1MoveRYCmd) U1MoveRXY(U1MoveRXYCmd)
+        Lmargin(U1LmarginCmd)
+        Setbold(U1SetboldCmd) U1Setsp(U1SetspCmd)
+        Pw(U1PwCmd) U1Ph(U1PhCmd)
+        PresentAt(U1PresentAtCmd) U1CutAt(U1CutAtCmd)
+        Cut("CUT") U1PartialCut("PARTIAL-CUT")
+    }
+        // ! U1 базовые
+        U1GetVarCmd ( #[ignore] (GETVAR_KW I) StrLit )
+        U1SetVarCmd { SETVAR_KW,    I, name: StrLit,    I,  value: StrLit       }
+        U1DoCmd     { DO_KW,        I, action: StrLit,      param: (I StrLit)?  }
+
+        // ! U1 строгие
+        U1DoDeviceResetCmd { DO_KW, I, path: "\"device\.reset\"", param: (I StrLit)? }
+
+        U1DoDeviceRestoreDefaultsCmd {
+            DO_KW, I, path: "\"device\.restore_defaults\"", I, category: RestoreCategory,
+        }
+            RestoreCategory {
+                WLAN(WLAN_STR)
+                IP(IP_STR)
+                DISPLAY(DISPLAY_STR)
+                POWER(POWER_STR)
+            }
+                unit WLAN_STR = "\"wlan\""
+                unit IP_STR = "\"ip\""
+                unit DISPLAY_STR = "\"display\""
+                unit POWER_STR = "\"power\""
+
+        unit DO_KW = "do"
+
+        U1SetvarPrintSpeedCmd    { SETVAR_KW, I, path: PRINT_SPEED_PATH,    I, value: StrLit }
+        U1SetvarPrintContrastCmd { SETVAR_KW, I, path: PRINT_CONTRAST_PATH, I, value: StrLit }
+        U1GetvarPrintSpeedCmd    ( #[ignore] (GETVAR_KW I) PRINT_SPEED_PATH )
+        U1GetvarPrintContrastCmd ( #[ignore] (GETVAR_KW I) PRINT_CONTRAST_PATH )
+
+            unit PRINT_SPEED_PATH = "\"print\.speed\""
+            unit PRINT_CONTRAST_PATH = "\"print\.contrast\""
+
+        U1SetvarMediaTypeCmd { SETVAR_KW, I, path: MEDIA_TYPE_PATH, I, value: StrLit }
+        U1GetvarMediaTypeCmd ( #[ignore] (GETVAR_KW I) MEDIA_TYPE_PATH )
+            unit MEDIA_TYPE_PATH = "\"media\.type\""
+
+        U1SetvarIpAddrCmd { SETVAR_KW, I, path: IP_ADDR_PATH, I, value: StrLit }
+        U1GetvarIpAddrCmd ( #[ignore] (GETVAR_KW I) IP_ADDR_PATH )
+            unit IP_ADDR_PATH = "\"ip\.addr\""
+
+        U1SetvarWlanSsidCmd     { SETVAR_KW, I, path: WLAN_SSID_PATH,       I, value: StrLit }
+        U1SetvarWlanSecurityCmd { SETVAR_KW, I, path: WLAN_SECURITY_PATH,   I, value: StrLit }
+        U1GetvarWlanSsidCmd     ( #[ignore] (GETVAR_KW I) WLAN_SSID_PATH )
+        U1GetvarWlanSecurityCmd ( #[ignore] (GETVAR_KW I) WLAN_SECURITY_PATH )
+            unit WLAN_SSID_PATH = "\"wlan\.ssid\""
+            unit WLAN_SECURITY_PATH = "\"wlan\.security\""
+
+        U1SetvarBtNameCmd { SETVAR_KW, I, path: BLUETOOTH_NAME_PATH, I, value: StrLit, }
+        U1GetvarBtNameCmd { GETVAR_KW, I, path: BLUETOOTH_NAME_PATH, }
+            unit BLUETOOTH_NAME_PATH = "\"bluetooth\.friendly_name\""
+
+        unit GETVAR_KW = "getvar"
+        unit SETVAR_KW = "setvar"
+
+        U1Lan {
+            lan: "LAN", I,
+            variant: U1LanV
+        }
+            U1LanV {
+                IpV(U1LanIp)
+                Ssid(U1LanSsidCmd)
+                Get(U1LanGet)
+            }
+                U1LanIp {
+                    variant: U1LanIpV,
+                    I,
+                    ip: "(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}",
+                }
+                    U1LanIpV {
+                        IpAddr("IPADDR")
+                        Gateway("GATEWAY-IPADDR")
+                        Remote("REMOTE-IPADDR")
+                        Submask("SUBMASK")
+                    }
+                U1LanSsidCmd {
+                    op: "SSID",
+                    I,
+                    ssid: StrOrBare,
+                }
+                U1LanGet {
+                    variant: U1LanGetV,
+                    I,
+                    mode: LanReplyMode,
+                }
+                    U1LanGetV {
+                        Status("GET-?STATUS")
+                        Config("GET-?CONFIG")
+                    }
+                    LanReplyMode { PRINT("PRINT") REPLY("REPLY") }
+
+        // Line Print Mode
+        U1SetlpCmd          { "SETLP", I, font: IntLit, I, size: IntLit, I, unit_height: IntLit, }
+        U1SetlfCmd          ( #[ignore] ("SETLF" I)  IntLit )
+        U1SetlpTimeoutCmd   ( #[ignore] ("SETLP-TIMEOUT" I)  IntLit )
+        U1MoveXCmd          ( #[ignore] ("X" I)  IntLit )
+        U1MoveYCmd          ( #[ignore] ("Y" I)  IntLit )
+        U1MoveXYCmd         { "XY", I, x: IntLit, I, y: IntLit, }
+        U1MoveRXCmd         ( #[ignore] ("RX" I)  IntLit )
+        U1MoveRYCmd         ( #[ignore] ("RY" I)  IntLit )
+        U1MoveRXYCmd        { "RXY", I, dx: IntLit, I, dy: IntLit, }
+        U1LmarginCmd        ( #[ignore] ("LMARGIN" I)  IntLit )
+        U1SetboldCmd        ( #[ignore] ("SETBOLD" I)  IntLit )
+        U1SetspCmd          ( #[ignore] ("SETSP" I)  IntLit )
+        U1PwCmd             ( #[ignore] ("PW" I)  IntLit )
+        U1PhCmd             ( #[ignore] ("PH" I)  IntLit )
+        U1PresentAtCmd      ( #[ignore] ("PRESENT-AT" I)  (I IntLit)? )
+        U1CutAtCmd          ( #[ignore] ("CUT-AT" I)  (I IntLit)? )
+CommonCmd {
+    Encoding(EncodingCmd)
+    Journal("JOURNAL")
+    Units(UnitsCmd)
+    Comment(";" "[^\r\n]*")
+    PageWidth(PageWidthCmd)
+    Speed(SpeedCmd)
+    Contrast(ContrastCmd)
+    Tone(ToneCmd)
+    BarSense(BarSenseCmd)
+    GapSense(GapSenseCmd)
+    Announce(AnnounceCmd)
+    LogMsg(LogMsgCmd)
+    LogToggle(LogToggleCmd)
+    Esc(EscCmd)
+    Raw(RawCmd)
+
+    PresentAtCmd(PresentAtCmd)
+    CutAtCmd(CutAtCmd)
+    Cut("CUT")
+    PartialCut("PARTIAL-CUT")
+}
+    EncodingCmd     ( #[ignore] ("ENCODING" I)  EncodingName    )
+        EncodingName { ASCII("ASCII") UTF8("UTF-8") GB18030("GB18030") }
+    UnitsCmd    { InInches("IN-INCHES") InCentimeters("IN-CENTIMETERS") InMillimeters("IN-MILLIMETERS") InDots("IN-DOTS") }
+
+    AnnounceCmd     ( #[ignore] "ANNOUNCE"      (I StrLit)?     )
+    LogMsgCmd       ( #[ignore] ("LOG-MSG" I)   StrLit          )
+    LogToggleCmd    ( #[ignore] ("LOG" I)       OnOff           )
+
+    PageWidthCmd ( #[ignore] ("PAGE-WIDTH" I) IntLit )
+
+    // параметры печати
+    SpeedCmd    ( #[ignore] ("SPEED" I)     IntLit      )
+    ContrastCmd ( #[ignore] ("CONTRAST" I)  IntLit      )
+    ToneCmd     ( #[ignore] ("TONE" I)      IntLit      )
+    BarSenseCmd ( #[ignore] "BAR-SENSE"     (I IntLit)? )
+    GapSenseCmd ( #[ignore] "GAP-SENSE"     (I IntLit)? )
+
+    EscCmd (
+        #[ignore] "\u{001B}"
+        EscV
+    )
+        EscV {
+            AcknowledgePrinterReset("N")
+            GetPrinterInfo("v")
+            GetExtendedStatus("i")
+            GetUserLabelCount("JRU")
+            ResetUserLabelCount("JWaccNVMU")
+            PowerOff("p")
+        }
+
+    // fallback
+    RawCmd { name: UpperIdent, I, args: Arg* }
+        Arg { Int(IntLit) Str(StrLit) Ident(UpperIdent) }
+
+    PresentAtCmd { "PRESENT-AT", I, length: IntLit, I, delay: IntLit }
+    CutAtCmd ( #[ignore] ("CUT-AT" I) IntLit )
+
+I = WS?
+
+ParamPath = PARAM_SEG ("\." PARAM_SEG)*;
+    PARAM_SEG = "[A-Za-z_][A-Za-z0-9_\-]*"
+SignedInt20 = "[+-]?\d{1,20}"
+
+// ===== EOL / WS =====
+unit EOL = "\r\n"
+unit WS  = "[ \t]+"
+
+// ===== literals =====
+IntLit: u32 = "[0-9]+"
+StrLit = "\"([^\"\\]|\\.)*\""
+StrOrBare = "(?:\"([^\"\\]|\\.)*\"|[^ \t\r\n]+)"
+unit Bang = "!"
+SignedIntLit: i32 = "-?[0-9]+"
+NumberLit: f32 = "[0-9]+(?:\.[0-9]+)?"
+
+// file names / identifiers
+FileName = "[A-Za-z0-9_\-\.\/:]+"
+FileNamePattern = "[A-Za-z0-9_\-\.\/:\*\?]+"
+UpperIdent = "[A-Z][A-Z0-9\.\-_]*"
+
+// Text effects
+unit ON_KW = "ON"
+unit OFF_KW = "OFF"
+
+// ===== 1D / 2D barcodes =====
+unit BARCODE_KW = "BARCODE"
+unit B_KW = "B"
+unit VBARCODE_KW = "VBARCODE"
+unit VB_KW = "VB"

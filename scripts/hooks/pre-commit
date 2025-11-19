@@ -1,0 +1,54 @@
+#!/bin/bash
+# 
+# abstract-parser — proprietary, source-available software (not open-source).    
+# Copyright (c) 2025 Abakar Letifov
+# (Летифов Абакар Замединович). All rights reserved.
+# 
+# Use of this Work is permitted only for viewing and internal evaluation,        
+# under the terms of the LICENSE file in the repository root.
+# If you do not or cannot agree to those terms, do not use this Work.
+# 
+# THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+# 
+set -e
+
+spinner() {
+    local pid=$1 delay=0.1 spinstr='|/-\'
+    while kill -0 $pid 2>/dev/null; do
+        local temp=${spinstr#?}
+        printf " [%c] Checking clippy...  " "$spinstr"
+        spinstr=$temp${spinstr%$temp}
+        sleep $delay
+        printf "\r"
+    done
+    printf "    \r"
+}
+
+echo "🔍 Checking for warnings (clippy)..."
+
+# Show all warnings in the workspace (doesn't fail the script)
+cargo clippy --all-targets --all-features --workspace &
+show_pid=$!
+
+# Strict check — fail if any warnings exist (фон)
+cargo clippy --all-targets --all-features --workspace -- -D warnings >/dev/null 2>&1 &
+strict_pid=$!
+
+wait $show_pid
+
+if kill -0 $strict_pid 2>/dev/null; then
+    spinner $strict_pid
+fi
+
+wait $strict_pid || {
+    echo "❌ Clippy warnings detected. Please fix them before committing!"
+    exit 1
+}
+
+echo "🧹 Checking formatting (rustfmt)..."
+cargo fmt --check
+
+echo "✅ Running tests..."
+cargo test
+
+echo "🎉 All checks passed successfully!"
